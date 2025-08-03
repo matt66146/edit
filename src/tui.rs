@@ -2209,6 +2209,12 @@ impl<'a> Context<'a, '_> {
                     right: inner.right,
                     bottom: inner.bottom,
                 };
+                let lines_rect = Rect {
+                    left: 0,
+                    top: inner.top,
+                    right: inner.left + (tb.margin_width() / 2),
+                    bottom: inner.bottom,
+                };
                 let pos = Point {
                     x: mouse.x - inner.left - tb.margin_width() + tc.scroll_offset.x,
                     y: mouse.y - inner.top + tc.scroll_offset.y,
@@ -2294,6 +2300,16 @@ impl<'a> Context<'a, '_> {
                                 + (delta_y as i64 * scrollable_height as i64 / trackable as i64)
                                     as CoordType;
                         }
+                    }
+                } else if lines_rect.contains(self.tui.mouse_down_position) {
+                    match self.input_mouse_click {
+                        _ => match self.tui.mouse_state {
+                            InputMouseState::Left => {
+                                tb.cursor_move_to_visual(pos);
+                                tb.select_line()
+                            }
+                            _ => return false,
+                        },
                     }
                 }
 
